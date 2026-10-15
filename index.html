@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Telaah: sistem evaluasi dan penilaian guru serta siswa.">
+  <meta name="theme-color" content="#E6E6FA">
+  <title>Telaah | Evaluasi Guru dan Siswa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+:root{
+  --lav:#E6E6FA;--thistle:#D8BFD8;--pastel:#C3B1E1;
+  --deep:#5B3F9A;--deeper:#45307A;--ink:#2E2650;--mute:#6C6584;
+  --bg:#FAF9FD;--card:#fff;--line:#E3DDF0;--ok:#3D7A5A;--bad:#A8432F;--r:14px;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:80px}
+body{margin:0;font:16px/1.6 'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif;line-height:1.25;margin:0 0 .5em;font-weight:600}
+h1{font-size:clamp(1.7rem,4vw,2.4rem)}h2{font-size:1.35rem}h3{font-size:1.15rem}h4{font-size:1rem;margin-top:1.4em}
+a{color:var(--deep)}
+:focus-visible{outline:3px solid var(--deep);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding:28px 18px 64px}
+.lead,.mute{color:var(--mute)}.lead{margin-top:-.3em;max-width:60ch}
+.mute{font-size:.92rem;margin:.4em 0}
+.empty{padding:28px;border:2px dashed var(--pastel);border-radius:var(--r);text-align:center;color:var(--mute)}
+
+/* header */
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:18px;padding:12px 18px;background:var(--lav);border-bottom:1px solid var(--pastel)}
+.brand{font:600 1.35rem 'Fraunces',Georgia,serif;text-decoration:none;color:var(--deeper)}
+.top nav{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none}
+.top nav a{padding:6px 14px;border-radius:99px;text-decoration:none;color:var(--ink);white-space:nowrap;font-weight:500}
+.top nav a:hover{background:var(--thistle)}
+.top nav a.on{background:var(--deep);color:#fff}
+
+/* buttons & fields */
+.btn,.ghost{font:inherit;font-weight:700;border-radius:10px;padding:10px 18px;cursor:pointer;text-decoration:none;display:inline-block;border:2px solid var(--deep);background:var(--deep);color:#fff}
+.btn:hover{background:var(--deeper);border-color:var(--deeper)}
+.btn.alt{background:var(--lav);color:var(--deeper)}.btn.alt:hover{background:var(--thistle)}
+.ghost{background:transparent;color:var(--deeper)}.ghost:hover{background:var(--lav)}
+.sm{padding:5px 12px;font-size:.88rem}.danger{color:var(--bad);border-color:var(--bad)}
+.btn:disabled{background:#E9E6F0;border-color:#E9E6F0;color:#8E889F;cursor:not-allowed}
+.link{background:none;border:0;padding:0;font:inherit;color:var(--deep);text-decoration:underline;cursor:pointer}
+label{display:block;font-weight:500;margin:0 0 14px}
+input,select,textarea{display:block;width:100%;margin-top:5px;padding:10px 12px;font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--pastel);border-radius:10px}
+textarea{resize:vertical}
+.chk{display:flex;gap:8px;align-items:center}.chk input{width:auto;margin:0}
+.back{display:inline-block;margin-bottom:10px;font-weight:500}
+
+/* cards & layout */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
+.grid .card{margin:0;display:flex;flex-direction:column;gap:4px;border-top:6px solid var(--pastel)}
+.grid .btn{margin-top:auto;text-align:center}
+.meta{color:var(--mute);font-size:.88rem}
+.split{display:grid;gap:18px;grid-template-columns:1fr}
+@media(min-width:860px){.split{grid-template-columns:5fr 7fr;align-items:start}}
+.bar{height:9px;background:var(--lav);border-radius:99px;overflow:hidden;min-width:90px}
+.bar i{display:block;height:100%;background:var(--deep);border-radius:99px}
+
+/* role gate */
+.gate{max-width:900px;margin:0 auto;padding:8vh 18px 40px}
+.gate-head{text-align:center;margin-bottom:34px}.gate-head h1{font-size:clamp(2.4rem,7vw,3.8rem);color:var(--deeper);margin-bottom:.2em}
+.gate-head p{color:var(--mute);max-width:52ch;margin:0 auto}
+.roles{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:700px){.roles{grid-template-columns:1fr 1fr}}
+.role{font:inherit;text-align:left;border:2px solid transparent;border-radius:20px;padding:34px 28px;cursor:pointer;color:var(--ink);transition:border-color .2s,transform .2s}
+.role h2{font-size:1.7rem;margin-bottom:.3em}.role span{color:var(--mute)}
+.r-siswa{background:var(--lav)}.r-guru{background:var(--thistle)}
+.role:hover{border-color:var(--deep);transform:translateY(-3px)}
+.demo{text-align:center;color:var(--mute);font-size:.9rem;margin-top:30px}
+
+/* checkpoint stepper */
+.steps{list-style:none;margin:18px 0;padding:0;display:flex;gap:0}
+.steps li{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;text-align:center;font-size:.9rem;font-weight:500}
+.steps li+li::before{content:"";position:absolute;top:19px;right:50%;width:100%;height:4px;background:var(--line);z-index:0}
+.steps li.done+li::before,.steps li.current::before{background:var(--pastel)}
+.node{position:relative;z-index:1;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:#fff;border:3px dashed var(--pastel);color:var(--mute)}
+.steps .done .node{background:var(--pastel);border:3px solid var(--pastel);color:var(--deeper)}
+.steps .current .node{background:var(--deep);border:3px solid var(--deep);color:#fff}
+.steps .locked{color:var(--mute)}
+fieldset.q{border:0;border-left:4px solid var(--pastel);padding:2px 0 2px 16px;margin:0 0 22px}
+fieldset.q.missing{border-color:var(--bad);background:#FBF1EE}
+legend{font-weight:700;padding:0;margin-bottom:8px;float:left;width:100%}fieldset.q>*:not(legend){clear:both}
+.opt{display:flex;gap:10px;align-items:center;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;margin:0 0 8px;cursor:pointer;font-weight:400}
+.opt:has(input:checked){background:var(--lav);border-color:var(--pastel)}
+.opt input{width:auto;margin:0;accent-color:var(--deep)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.rub ul,.kv,.list{list-style:none;margin:0 0 12px;padding:0}
+.rub li,.kv li{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)}
+.done{border-left:6px solid var(--ok)}
+
+/* rating pills */
+.fld{margin-bottom:14px}.fld>span{font-weight:500;display:block}
+.rate{display:flex;gap:6px;margin-top:6px}
+.rate label{margin:0}.rate input{position:absolute;opacity:0;width:1px;height:1px}
+.rate span{display:grid;place-items:center;width:44px;height:44px;border-radius:10px;border:1.5px solid var(--pastel);cursor:pointer;font-weight:700}
+.rate input:checked+span{background:var(--deep);border-color:var(--deep);color:#fff}
+.rate input:focus-visible+span{outline:3px solid var(--deep);outline-offset:2px}
+
+/* teacher */
+.list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.list li>div:first-child{display:flex;flex-direction:column}.row{display:flex;gap:6px}
+.rub-row{display:grid;grid-template-columns:1fr 84px auto;gap:8px;margin-bottom:8px}.rub-row input{margin:0}
+.tools{display:grid;gap:12px;grid-template-columns:1fr;margin:14px 0}
+@media(min-width:640px){.tools{grid-template-columns:1fr 1fr}}
+.stats{display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.stats div{background:var(--lav);border-radius:var(--r);padding:14px 22px;display:flex;flex-direction:column}
+.stats b{font:600 1.8rem 'Fraunces',Georgia,serif;color:var(--deeper)}.stats span{color:var(--mute);font-size:.9rem}
+.tablewrap{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;min-width:520px}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line)}
+thead{background:var(--lav)}tbody tr:hover{background:#FAF8FE}tr:last-child td{border-bottom:0}
+.th{background:none;border:0;font:inherit;font-weight:700;color:var(--deeper);cursor:pointer;padding:0}
+blockquote{margin:10px 0 0;padding:10px 14px;background:var(--lav);border-radius:10px}
+cite{display:block;font-style:normal;font-size:.85rem;color:var(--mute);margin-top:2px}cite::before{content:"Dari "}
+
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--deeper);color:#fff;padding:12px 20px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:20;max-width:90vw}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:560px){.top{flex-wrap:wrap}.steps li{font-size:.78rem}.rub-row{grid-template-columns:1fr 70px auto}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript>Aplikasi ini membutuhkan JavaScript.</noscript>
+  <script>
+'use strict';
+/* ========== Data & state ========== */
+const KEY = 'telaah-v1';
+const PEER = ['Kerja sama', 'Kontribusi', 'Komunikasi'];
+const TEACH = ['Kejelasan penjelasan', 'Keadilan penilaian', 'Kualitas umpan balik'];
+const NAV = {
+  siswa: [['/siswa', 'Tugas saya'], ['/siswa/umpan-balik', 'Penilaian &amp; umpan balik']],
+  guru: [['/guru', 'Rubrik &amp; soal'], ['/guru/rekap', 'Rekap siswa'], ['/guru/hasil', 'Umpan balik masuk']]
+};
+
+const seed = () => ({
+  role: null, me: 'Aulia',
+  instruments: [
+    { id: 'i1', title: 'Evaluasi Bab 3: Ekosistem', mapel: 'IPA',
+      rubric: [{ k: 'Ketepatan konsep', w: 40 }, { k: 'Kelengkapan jawaban', w: 30 }, { k: 'Penalaran', w: 30 }],
+      stages: [
+        { name: 'Pemahaman dasar', items: [
+          { q: 'Manakah yang termasuk komponen biotik?', opts: ['Air', 'Produsen', 'Tanah'], ans: 1 },
+          { q: 'Pengurai berperan dalam…', opts: ['Daur materi', 'Fotosintesis', 'Evaporasi'], ans: 0 }] },
+        { name: 'Analisis', items: [
+          { q: 'Jelaskan dampak hilangnya satu predator puncak pada rantai makanan.' },
+          { q: 'Usulkan satu cara menjaga keseimbangan ekosistem di sekolahmu.' }] }] },
+    { id: 'i2', title: 'Refleksi Literasi Bulanan', mapel: 'Bahasa Indonesia',
+      rubric: [{ k: 'Pemahaman bacaan', w: 50 }, { k: 'Kualitas refleksi', w: 50 }],
+      stages: [
+        { name: 'Ringkasan', items: [{ q: 'Ringkas bacaan pilihanmu dalam tiga kalimat.' }] },
+        { name: 'Refleksi', items: [{ q: 'Gagasan apa yang paling mengubah cara pandangmu, dan mengapa?' }] }] }
+  ],
+  students: [
+    { name: 'Aulia', res: {} },
+    { name: 'Bima', res: { i1: { stage: 2, done: true, score: 100 } } },
+    { name: 'Citra', res: { i1: { stage: 1 } } },
+    { name: 'Dimas', res: {} },
+    { name: 'Eka', res: { i1: { stage: 2, done: true, score: 50 } } }
+  ],
+  work: {},
+  peer: [
+    { from: 'Bima', to: 'Citra', s: [5, 4, 5], c: 'Rajin membagi tugas dan selalu tepat waktu.' },
+    { from: 'Eka', to: 'Citra', s: [4, 4, 4], c: 'Perlu lebih aktif saat diskusi kelompok.' },
+    { from: 'Citra', to: 'Bima', s: [4, 5, 4], c: 'Presentasinya runtut dan mudah diikuti.' }],
+  teacher: [
+    { from: 'Anonim', anon: true, r: [5, 4, 5], c: 'Contoh yang diberikan sangat membantu memahami materi.' },
+    { from: 'Dimas', anon: false, r: [4, 4, 3], c: 'Mohon beri waktu latihan soal lebih panjang sebelum evaluasi.' }]
+});
+
+function load() { try { return JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { return seed(); } }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch { /* penyimpanan tidak tersedia */ } }
+
+let S = load();
+let CTX = {};            // instrumen yang sedang dikerjakan siswa
+let editId = null;       // instrumen yang sedang diedit guru
+let rk = { i: null, q: '', sort: 'name', dir: 1 };
+
+/* ========== Helper ========== */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const avg = a => a.length ? (a.reduce((x, y) => x + y, 0) / a.length).toFixed(1) : '–';
+const meObj = () => S.students.find(s => s.name === S.me);
+const curW = () => S.work[CTX.id];
+const curI = () => S.instruments.find(i => i.id === CTX.id);
+const pct = (r, ins) => r && r.done ? 100 : Math.round(Math.min((r && r.stage) || 0, ins.stages.length - 1) / ins.stages.length * 100);
+const empty = m => `<div class="empty">${m}</div>`;
+const rate = n => `<div class="rate" role="radiogroup">${[1, 2, 3, 4, 5].map(v => `<label><input type="radio" name="${n}" value="${v}" required><span>${v}</span></label>`).join('')}</div>`;
+const rubRow = (k = '', w = '') => `<div class="rub-row"><input aria-label="Kriteria" placeholder="Kriteria" value="${esc(k)}"><input aria-label="Bobot" type="number" min="1" max="100" placeholder="%" value="${esc(w)}"><button type="button" class="ghost sm" data-act="delrow">Hapus</button></div>`;
+let tt;
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2600); }
+
+const shell = (role, path, body) => `
+  <header class="top"><a class="brand" href="#/${role}">Telaah</a>
+    <nav>${NAV[role].map(([p, l]) => `<a href="#${p}" class="${path === p ? 'on' : ''}">${l}</a>`).join('')}</nav>
+    <a class="ghost sm" href="#/" data-act="logout">Ganti peran</a></header>
+  <main class="wrap">${body}</main>`;
+
+/* ========== Views: akses ========== */
+const viewGate = () => `
+  <section class="gate">
+    <div class="gate-head"><h1>Telaah</h1>
+      <p>Ruang evaluasi untuk guru dan siswa: soal bertahap, penilaian teman sejawat, dan umpan balik dua arah.</p></div>
+    <div class="roles">
+      <button class="role r-siswa" data-act="role" data-v="siswa"><h2>Saya siswa</h2><span>Kerjakan evaluasi, nilai teman, dan beri masukan untuk guru.</span></button>
+      <button class="role r-guru" data-act="role" data-v="guru"><h2>Saya guru</h2><span>Susun rubrik dan soal, pantau progres kelas, baca umpan balik.</span></button>
+    </div>
+    <p class="demo">Versi demo: data contoh tersimpan di browser ini. <button class="link" data-act="reset">Atur ulang data</button></p>
+  </section>`;
+
+/* ========== Views: siswa ========== */
+function sTugas() {
+  const me = meObj();
+  const cards = S.instruments.map(i => {
+    const r = me.res[i.id] || {};
+    const st = r.done ? `Selesai${r.score != null ? ', nilai ' + r.score : ''}` : r.stage ? `Tahap ${r.stage} dari ${i.stages.length} tervalidasi` : 'Belum dimulai';
+    return `<article class="card"><div class="meta">${esc(i.mapel)}</div><h3>${esc(i.title)}</h3>
+      <div class="bar"><i style="width:${pct(r, i)}%"></i></div><p class="mute">${st}</p>
+      <a class="btn" href="#/siswa/kerjakan/${i.id}">${r.done ? 'Lihat hasil' : r.stage ? 'Lanjutkan' : 'Mulai kerjakan'}</a></article>`;
+  }).join('');
+  return shell('siswa', '/siswa', `<h1>Halo, ${esc(S.me)}</h1><p class="lead">Instrumen evaluasi yang perlu kamu kerjakan.</p>
+    <div class="grid">${cards || empty('Belum ada instrumen evaluasi.')}</div>`);
+}
+
+function stageUI(ins, w) {
+  const c = w.cur, st = ins.stages[c], ok = !!w.ok[c], last = c === ins.stages.length - 1;
+  const steps = ins.stages.map((s, i) => {
+    const k = i < c ? 'done' : i === c ? 'current' : 'locked';
+    return `<li class="${k}"><span class="node">${k === 'done' ? '✓' : i + 1}</span><span>${esc(s.name)}</span></li>`;
+  }).join('');
+  const items = st.items.map((it, i) => {
+    const key = c + '-' + i, v = w.answers[key] ?? '';
+    const f = it.opts
+      ? it.opts.map((o, j) => `<label class="opt"><input type="radio" name="q${key}" data-key="${key}" value="${j}" ${String(v) === String(j) ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('')
+      : `<textarea rows="4" data-key="${key}" aria-label="Jawaban" placeholder="Tulis jawabanmu di sini">${esc(v)}</textarea>`;
+    return `<fieldset class="q" data-q="${key}"><legend>${esc(it.q)}</legend>${f}</fieldset>`;
+  }).join('');
+  return `<ol class="steps">${steps}</ol>
+    <section class="card"><h2>Tahap ${c + 1}: ${esc(st.name)}</h2>${items}
+      <div class="actions">
+        ${c > 0 ? '<button class="ghost" data-act="prev">Tahap sebelumnya</button>' : ''}
+        <button class="btn alt" data-act="validate">${ok ? 'Tervalidasi' : 'Validasi tahap ini'}</button>
+        ${last ? `<button class="btn" data-act="submit" ${ok ? '' : 'disabled'}>Kumpulkan evaluasi</button>`
+               : `<button class="btn" data-act="next" ${ok ? '' : 'disabled'}>Lanjut ke tahap ${c + 2}</button>`}
+      </div>
+      <p class="mute" id="vstate">${ok ? 'Tahap ini sudah divalidasi, tombol lanjut terbuka.' : 'Jawab semua soal, lalu validasi untuk membuka tahap berikutnya.'}</p>
+    </section>`;
+}
+
+function sKerja(id) {
+  const ins = S.instruments.find(i => i.id === id); CTX = { id };
+  if (!ins) return shell('siswa', '/siswa', empty('Instrumen tidak ditemukan. <a href="#/siswa">Kembali</a>'));
+  const res = meObj().res[id] || {};
+  const rub = `<aside class="card rub"><h3>Penilaian berdasarkan</h3><ul>${ins.rubric.map(r => `<li><span>${esc(r.k)}</span><b>${r.w}%</b></li>`).join('')}</ul></aside>`;
+  if (res.done) return shell('siswa', '/siswa', `<a class="back" href="#/siswa">Kembali</a><h1>${esc(ins.title)}</h1>
+    <div class="card done"><h2>Evaluasi sudah dikumpulkan</h2>
+    <p>${res.score != null ? `Nilai soal pilihan ganda: <b>${res.score}</b>. Soal uraian dinilai guru.` : 'Jawaban uraianmu menunggu penilaian guru.'}</p></div>${rub}`);
+  const n = ins.stages.length, done = Math.min(res.stage || 0, n);
+  const w = S.work[id] || (S.work[id] = { answers: {}, ok: Array(done).fill(true), cur: Math.min(done, n - 1) });
+  return shell('siswa', '/siswa', `<a class="back" href="#/siswa">Kembali</a><h1>${esc(ins.title)}</h1>${stageUI(ins, w)}${rub}`);
+}
+
+function sFeedback() {
+  const mates = S.students.filter(s => s.name !== S.me);
+  return shell('siswa', '/siswa/umpan-balik', `<h1>Penilaian &amp; umpan balik</h1>
+    <div class="split">
+      <form class="card" data-form="peer"><h3>Nilai teman sekelas</h3>
+        <label>Pilih teman<select name="to" required>${mates.map(m => `<option>${esc(m.name)}</option>`).join('')}</select></label>
+        ${PEER.map((k, i) => `<div class="fld"><span>${k}</span>${rate('s' + i)}</div>`).join('')}
+        <label>Catatan<textarea name="c" rows="3" required placeholder="Sebutkan hal yang sudah baik dan satu saran"></textarea></label>
+        <button class="btn">Kirim penilaian</button></form>
+      <form class="card" data-form="teach"><h3>Umpan balik untuk guru</h3>
+        <p class="mute">Skala 1 (kurang) sampai 5 (sangat baik).</p>
+        ${TEACH.map((k, i) => `<div class="fld"><span>${k}</span>${rate('r' + i)}</div>`).join('')}
+        <label>Masukan<textarea name="c" rows="3" required placeholder="Apa yang membantu belajarmu, dan apa yang bisa diperbaiki?"></textarea></label>
+        <label class="chk"><input type="checkbox" name="anon" checked> Kirim sebagai anonim</label>
+        <button class="btn">Kirim umpan balik</button></form>
+    </div>`);
+}
+
+/* ========== Views: guru ========== */
+const parseLines = t => t.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+  const p = l.split('|').map(x => x.trim());
+  if (p.length >= 3) {
+    const opts = p[1].split(';').map(x => x.trim()).filter(Boolean), a = parseInt(p[2], 10) - 1;
+    if (opts.length > 1 && a >= 0 && a < opts.length) return { q: p[0], opts, ans: a };
+  }
+  return { q: p[0] };
+});
+const toLines = s => s.items.map(it => it.opts ? `${it.q} | ${it.opts.join('; ')} | ${it.ans + 1}` : it.q).join('\n');
+
+function gRubrik() {
+  const ins = S.instruments.find(i => i.id === editId) ||
+    { title: '', mapel: '', rubric: [{ k: '', w: 100 }], stages: [{ name: 'Tahap 1', items: [] }, { name: 'Tahap 2', items: [] }] };
+  const list = S.instruments.map(i => `<li><div><b>${esc(i.title)}</b><span class="mute">${esc(i.mapel)}</span></div>
+    <div class="row"><button class="ghost sm" data-act="edit" data-v="${i.id}">Edit</button><button class="ghost sm danger" data-act="del" data-v="${i.id}">Hapus</button></div></li>`).join('');
+  return shell('guru', '/guru', `<h1>Rubrik &amp; soal evaluasi</h1>
+    <div class="split">
+      <section class="card"><h3>Instrumen tersimpan</h3><ul class="list">${list}</ul>
+        <button class="btn alt" data-act="new">Buat instrumen baru</button></section>
+      <form class="card" data-form="ins"><h3>${editId ? 'Edit instrumen' : 'Instrumen baru'}</h3>
+        <label>Judul<input name="title" required value="${esc(ins.title)}"></label>
+        <label>Mata pelajaran<input name="mapel" required value="${esc(ins.mapel)}"></label>
+        <h4>Rubrik penilaian <small class="mute">(total bobot harus 100)</small></h4>
+        <div id="rub-rows">${ins.rubric.map(r => rubRow(r.k, r.w)).join('')}</div>
+        <button type="button" class="ghost sm" data-act="addrow">Tambah kriteria</button>
+        ${[0, 1].map(n => `<h4>Tahap ${n + 1}</h4>
+          <label>Nama tahap<input name="sn${n}" required value="${esc(ins.stages[n] ? ins.stages[n].name : 'Tahap ' + (n + 1))}"></label>
+          <label>Soal, satu per baris<textarea name="sq${n}" rows="5" required placeholder="Soal uraian&#10;Soal pilihan | opsi A; opsi B; opsi C | 2">${esc(ins.stages[n] ? toLines(ins.stages[n]) : '')}</textarea></label>`).join('')}
+        <p class="mute">Soal pilihan ganda: pisahkan dengan tanda | lalu isi nomor jawaban yang benar.</p>
+        <button class="btn">Simpan instrumen</button></form>
+    </div>`);
+}
+
+function rkOut() {
+  const ins = S.instruments.find(i => i.id === rk.i);
+  if (!ins) return empty('Belum ada instrumen.');
+  const rows = S.students.filter(s => s.name.toLowerCase().includes(rk.q.toLowerCase())).map(s => {
+    const r = s.res[ins.id] || {};
+    return { n: s.name, p: pct(r, ins), sc: r.score, done: !!r.done };
+  });
+  const key = { name: 'n', progres: 'p', nilai: 'sc' }[rk.sort];
+  rows.sort((a, b) => ((a[key] ?? -1) > (b[key] ?? -1) ? 1 : -1) * rk.dir);
+  const th = (k, l) => `<th><button class="th" data-act="sort" data-v="${k}">${l}${rk.sort === k ? (rk.dir > 0 ? ' ▲' : ' ▼') : ''}</button></th>`;
+  return `<div class="stats"><div><b>${rows.filter(r => r.done).length}/${rows.length}</b><span>siswa selesai</span></div>
+    <div><b>${avg(rows.filter(r => r.sc != null).map(r => r.sc))}</b><span>rata-rata nilai</span></div></div>
+    <div class="tablewrap"><table><thead><tr>${th('name', 'Siswa')}${th('progres', 'Progres')}<th>Status</th>${th('nilai', 'Nilai')}</tr></thead>
+    <tbody>${rows.map(r => `<tr><td>${esc(r.n)}</td><td><div class="bar"><i style="width:${r.p}%"></i></div></td>
+      <td>${r.done ? 'Selesai' : r.p ? 'Mengerjakan' : 'Belum mulai'}</td><td>${r.sc ?? '–'}</td></tr>`).join('') || '<tr><td colspan="4">Tidak ada siswa yang cocok.</td></tr>'}</tbody></table></div>`;
+}
+
+function gRekap() {
+  rk.i = rk.i && S.instruments.some(i => i.id === rk.i) ? rk.i : (S.instruments[0] || {}).id;
+  return shell('guru', '/guru/rekap', `<h1>Rekap progres siswa</h1>
+    <div class="tools">
+      <label>Instrumen<select data-rk="i">${S.instruments.map(i => `<option value="${i.id}" ${i.id === rk.i ? 'selected' : ''}>${esc(i.title)}</option>`).join('')}</select></label>
+      <label>Cari siswa<input type="search" data-rk="q" value="${esc(rk.q)}" placeholder="Nama siswa"></label>
+    </div><div id="rk-out">${rkOut()}</div>`);
+}
+
+function gHasil() {
+  const names = [...new Set(S.peer.map(p => p.to))];
+  const kv = (labels, rows, pick) => `<ul class="kv">${labels.map((k, i) => `<li><span>${k}</span><b>${avg(rows.map(r => pick(r)[i]))}</b></li>`).join('')}</ul>`;
+  const peer = names.map(n => {
+    const l = S.peer.filter(p => p.to === n);
+    return `<article class="card"><h3>${esc(n)}</h3><p class="mute">${l.length} penilaian dari teman</p>${kv(PEER, l, p => p.s)}
+      ${l.map(p => `<blockquote>${esc(p.c)}<cite>${esc(p.from)}</cite></blockquote>`).join('')}</article>`;
+  }).join('');
+  const t = S.teacher;
+  const tf = t.length ? `<article class="card"><h3>Penilaian siswa untuk guru</h3><p class="mute">${t.length} umpan balik masuk</p>${kv(TEACH, t, x => x.r)}
+    ${t.map(x => `<blockquote>${esc(x.c)}<cite>${x.anon ? 'Anonim' : esc(x.from)}</cite></blockquote>`).join('')}</article>` : empty('Belum ada umpan balik dari siswa.');
+  return shell('guru', '/guru/hasil', `<h1>Umpan balik masuk</h1><h2>Untuk guru</h2>${tf}<h2>Penilaian antar siswa</h2><div class="grid">${peer || empty('Belum ada penilaian teman.')}</div>`);
+}
+
+/* ========== Router (hash-based, tanpa konfigurasi server) ========== */
+const routes = {
+  '/': viewGate,
+  '/siswa': sTugas, '/siswa/kerjakan': sKerja, '/siswa/umpan-balik': sFeedback,
+  '/guru': gRubrik, '/guru/rekap': gRekap, '/guru/hasil': gHasil
+};
+
+function render(keepScroll) {
+  const parts = location.hash.replace(/^#/, '').split('/').filter(Boolean);
+  if (parts[0] && parts[0] !== S.role) { location.hash = '/'; return; }   // proteksi akses per peran
+  const view = routes['/' + parts.slice(0, 2).join('/')] || (() => shell(S.role, '/' + S.role, empty('Halaman tidak ditemukan.')));
+  $('#app').innerHTML = view(parts[2]);
+  if (!keepScroll) window.scrollTo(0, 0);
+  document.title = 'Telaah | ' + (S.role === 'guru' ? 'Guru' : S.role === 'siswa' ? 'Siswa' : 'Evaluasi');
+}
+
+/* ========== Aksi (klik) ========== */
+const A = {
+  role(el) { S.role = el.dataset.v; save(); location.hash = '/' + S.role; },
+  logout() { S.role = null; save(); },
+  reset() { S = seed(); save(); render(); toast('Data demo dikembalikan.'); },
+
+  // checkpoint bertahap
+  validate() {
+    const w = curW(), ins = curI(); let miss = 0;
+    document.querySelectorAll('.q').forEach(q => {
+      const has = String(w.answers[q.dataset.q] ?? '').trim() !== '';
+      q.classList.toggle('missing', !has); if (!has) miss++;
+    });
+    if (miss) return toast(`${miss} soal belum dijawab.`);
+    w.ok[w.cur] = true;
+    const me = meObj(), r = me.res[ins.id] || (me.res[ins.id] = {});
+    r.stage = Math.max(r.stage || 0, w.cur + 1);
+    save(); render(true); toast('Tahap divalidasi. Tombol lanjut terbuka.');
+  },
+  next() { const w = curW(); if (!w.ok[w.cur]) return; w.cur++; save(); render(); },
+  prev() { const w = curW(); w.cur--; save(); render(); },
+  submit() {
+    const w = curW(), ins = curI(); if (!w.ok[w.cur]) return;
+    let total = 0, right = 0;
+    ins.stages.forEach((s, si) => s.items.forEach((it, ii) => {
+      if (it.opts) { total++; if (String(w.answers[si + '-' + ii]) === String(it.ans)) right++; }
+    }));
+    meObj().res[ins.id] = { stage: ins.stages.length, done: true, score: total ? Math.round(right / total * 100) : null };
+    delete S.work[ins.id]; save(); render(); toast('Evaluasi dikumpulkan.');
+  },
+
+  // guru: rubrik
+  new() { editId = null; render(true); },
+  edit(el) { editId = el.dataset.v; render(true); $('[data-form=ins]').scrollIntoView({ behavior: 'smooth' }); },
+  del(el) {
+    if (!confirm('Hapus instrumen ini?')) return;
+    S.instruments = S.instruments.filter(i => i.id !== el.dataset.v);
+    if (editId === el.dataset.v) editId = null;
+    save(); render(true); toast('Instrumen dihapus.');
+  },
+  addrow() { $('#rub-rows').insertAdjacentHTML('beforeend', rubRow()); },
+  delrow(el) { el.closest('.rub-row').remove(); },
+  sort(el) {
+    const k = el.dataset.v; if (rk.sort === k) rk.dir *= -1; else { rk.sort = k; rk.dir = 1; }
+    $('#rk-out').innerHTML = rkOut();
+  }
+};
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (el && !el.disabled && A[el.dataset.act]) A[el.dataset.act](el);
+});
+
+/* ========== Input & form ========== */
+$('#app').addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.key) {                       // jawaban berubah: wajib validasi ulang
+    const w = curW(); w.answers[t.dataset.key] = t.value; w.ok[w.cur] = false;
+    t.closest('.q').classList.remove('missing');
+    document.querySelectorAll('[data-act=next],[data-act=submit]').forEach(b => b.disabled = true);
+    $('[data-act=validate]').textContent = 'Validasi tahap ini';
+    $('#vstate').textContent = 'Jawaban berubah, validasi ulang tahap ini.';
+    save();
+  }
+  if (t.dataset.rk) { rk[t.dataset.rk] = t.value; $('#rk-out').innerHTML = rkOut(); }
+});
+
+const F = {
+  peer(f) {
+    const d = new FormData(f);
+    S.peer.push({ from: S.me, to: d.get('to'), s: [0, 1, 2].map(i => +d.get('s' + i)), c: d.get('c').trim() });
+    save(); f.reset(); toast('Penilaian terkirim.');
+  },
+  teach(f) {
+    const d = new FormData(f);
+    S.teacher.push({ from: S.me, anon: d.has('anon'), r: [0, 1, 2].map(i => +d.get('r' + i)), c: d.get('c').trim() });
+    save(); f.reset(); toast('Umpan balik terkirim.');
+  },
+  ins(f) {
+    const d = new FormData(f);
+    const rub = [...f.querySelectorAll('.rub-row')].map(r => ({ k: r.children[0].value.trim(), w: +r.children[1].value || 0 })).filter(r => r.k);
+    if (!rub.length || rub.reduce((a, r) => a + r.w, 0) !== 100) return toast('Total bobot rubrik harus tepat 100.');
+    const stages = [0, 1].map(n => ({ name: d.get('sn' + n).trim(), items: parseLines(d.get('sq' + n)) }));
+    if (stages.some(s => !s.items.length)) return toast('Setiap tahap butuh minimal satu soal.');
+    const o = { title: d.get('title').trim(), mapel: d.get('mapel').trim(), rubric: rub, stages };
+    if (editId) Object.assign(S.instruments.find(i => i.id === editId), o);
+    else S.instruments.push({ id: 'i' + Date.now(), ...o });
+    editId = null; save(); render(true); toast('Instrumen disimpan.');
+  }
+};
+$('#app').addEventListener('submit', e => {
+  const fn = F[e.target.dataset.form];
+  if (fn) { e.preventDefault(); fn(e.target); }
+});
+
+window.addEventListener('hashchange', () => render());
+render();
+</script>
+</body>
+</html>
